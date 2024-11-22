@@ -25,29 +25,66 @@ function displayBooks() {
     let row = document.createElement("tr");
     tbody.appendChild(row);
     for (let key in myLibrary[i]) {
-      let item = document.createElement("td");
-      row.appendChild(item);
-      item.textContent = myLibrary[i][key];
+      if (typeof myLibrary[i][key] !== "boolean") {
+        let item = document.createElement("td");
+        row.appendChild(item);
+        item.textContent = myLibrary[i][key];
+      }
+      else {
+        let item = document.createElement("td");
+        row.appendChild(item);
+        let readButton = document.createElement("button");
+        if (myLibrary[i][key] === true) {
+          readButton.textContent = "true";
+        }
+        else {
+          readButton.textContent = "false";
+        }
+        readButton.id = `${i}`;
+        readButton.className = 'read';
+        item.appendChild(readButton);
+      }
     }
-    let deleteButton = document.createElement("button");
-    deleteButton.textContent = "Delete Book";
-    deleteButton.className = "delete";
-    deleteButton.id = `${i}`;
-    row.appendChild(deleteButton);
+    addDeleteButton(i, row);
   }
 }
 
 displayBooks();
+
+function addDeleteButton(i, row) {
+  let deleteButton = document.createElement("button");
+  deleteButton.textContent = "Delete Book";
+  deleteButton.className = "delete";
+  deleteButton.id = `${i}`;
+  row.appendChild(deleteButton);
+}
 
 function displayBook() {
   const tbody = document.querySelector("tbody");
   let row = document.createElement("tr");
   tbody.appendChild(row);
   for (let key in myLibrary[myLibrary.length - 1]) {
-    let item = document.createElement("td");
-    row.appendChild(item);
-    item.textContent = myLibrary[myLibrary.length - 1][key];
+    if (typeof myLibrary[myLibrary.length - 1][key] !== "boolean") {
+      let item = document.createElement("td");
+      row.appendChild(item);
+      item.textContent = myLibrary[myLibrary.length - 1][key];
+    }
+    else {
+      let item = document.createElement("td");
+      row.appendChild(item);
+      let readButton = document.createElement("button");
+      if (myLibrary[myLibrary.length - 1][key] === true) {
+        readButton.textContent = "true";
+      }
+      else {
+        readButton.textContent = "false";
+      }
+      readButton.id = `${myLibrary.length - 1}`;
+      readButton.className = 'read';
+      item.appendChild(readButton);
+    }
   }
+  addDeleteButton(myLibrary.length - 1, row);
 }
 
 function removeBook(button_id) {
@@ -66,16 +103,19 @@ newBookButton.addEventListener("click", () => {
   newBookButton.hidden = true;
   collapseButton.hidden = false;
   form.hidden = false;
-  
-  submitButton.addEventListener("click", (e) => {
-    e.preventDefault();
-    addBookToLibrary(document.getElementById("title").value, 
-    document.getElementById("author").value, 
-    document.getElementById("pages").value, 
-    document.getElementById("read").value);
-    displayBook();
-    form.reset();
-  })
+})
+
+submitButton.addEventListener("click", (e) => {
+  e.preventDefault();
+  console.log(myLibrary);
+  addBookToLibrary(document.getElementById("title").value, 
+  document.getElementById("author").value, 
+  document.getElementById("pages").value, 
+  Boolean(document.getElementById("read").value));
+  console.log(myLibrary);
+  displayBook();
+  console.log(myLibrary);
+  form.reset();
 })
 
 collapseButton.addEventListener("click", (e) => {
@@ -85,10 +125,21 @@ collapseButton.addEventListener("click", (e) => {
   form.hidden = true;
 })
 
-const deleteButtons = document.querySelectorAll(".delete");
-deleteButtons.forEach(button => {
-  button.addEventListener("click", (e) => {
-    e.preventDefault();
-    removeBook(button.id);
-  })
-});
+document.addEventListener("click", (e) => {
+  const targetElement = e.target;
+
+  if (targetElement.className === "read") {
+    if (targetElement.textContent === "true") {
+      myLibrary[targetElement.id].read = false;
+    }
+    else {
+      myLibrary[targetElement.id].read = true;
+    }
+    document.querySelector("tbody").innerHTML = "";
+    displayBooks();
+  }
+
+  if (targetElement.className === "delete") {
+    removeBook(targetElement.id);
+  }
+})
