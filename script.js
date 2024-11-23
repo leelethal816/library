@@ -73,7 +73,7 @@ function displayBook() {
       let item = document.createElement("td");
       row.appendChild(item);
       let readButton = document.createElement("button");
-      if (myLibrary[myLibrary.length - 1][key] === true) {
+      if (myLibrary[myLibrary.length - 1][key]) {
         readButton.textContent = "true";
       }
       else {
@@ -107,14 +107,11 @@ newBookButton.addEventListener("click", () => {
 
 submitButton.addEventListener("click", (e) => {
   e.preventDefault();
-  console.log(myLibrary);
   addBookToLibrary(document.getElementById("title").value, 
   document.getElementById("author").value, 
   document.getElementById("pages").value, 
-  Boolean(document.getElementById("read").value));
-  console.log(myLibrary);
+  (document.getElementById("read").value === 'true'));
   displayBook();
-  console.log(myLibrary);
   form.reset();
 })
 
